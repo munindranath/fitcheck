@@ -1,0 +1,74 @@
+# Example profile — a fictional candidate, used for demos, tests, and evals.
+#
+# To run Fitcheck against yourself, copy this file to `profile.local.yaml` and edit it.
+# That filename is gitignored and takes precedence over this one, so your real
+# compensation floor and your banned-claim list never enter version control.
+#
+#   cp profile.yaml profile.local.yaml
+#
+# Keeping the real profile out of the repo is not incidental — a banned-claim list is
+# a record of numbers you must not state. It is useful precisely because it is candid,
+# and candid is not the same as publishable.
+
+candidate:
+  name: Alex Rivera (fictional)
+  target_role: Developer Platform PM
+  open_to:
+    - contract
+    - FTE
+  levels:
+    - Senior PM
+    - Staff PM
+    - Principal PM
+  adjacent_ok:
+    - data-plane
+    - observability
+    - AI platform
+    - developer tools
+
+  compensation:
+    base_floor: 200000
+    base_target_min: 200000
+    base_target_max: 240000
+    equity_target_min: 300000
+    equity_target_max: 500000
+
+  location:
+    - remote
+    - East Coast
+
+  evidence:
+    - company: Meridian Software
+      title: Senior Product Manager
+      team: Platform
+      dates: Mar 2022 – Nov 2024
+      bullets:
+        - "internal API gateway used by 40+ engineering teams"
+        - "time-to-first-API-call 11 days to under 4 hours"
+        - "migrated 30 services onto OpenTelemetry as a deprecation program"
+        - "rejected a bespoke collector after a two-week buy-vs-build spike"
+        - "seat-plus-usage pricing across 60 existing contracts"
+
+    - company: Northgate Analytics
+      title: Product Manager
+      dates: Apr 2021 – Feb 2022
+      bullets:
+        - "0-to-1 developer portal to GA; cut 2 of 4 scoped surfaces to hold the date"
+
+    - company: Independent
+      title: Consultant
+      dates: 2020 – 2021
+      bullets: []
+
+  education:
+    - MBA
+    - Anthropic CCA-F (evals, guardrails, RAG, agents, MCP, reliability)
+
+  # Numbers this candidate must never state — wrong, stale, or not theirs to disclose.
+  # The agent fails the check and quotes the offending string rather than softening it.
+  # These are invented, to exercise the mechanism.
+  banned_claims:
+    - "~500 customers"
+    - "~$180M"
+    - "~9% churn"
+    - "$4M ARR for Meridian"
