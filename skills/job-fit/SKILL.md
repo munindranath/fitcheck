@@ -29,6 +29,7 @@ This skill evaluates whether a job posting matches a candidate's profile by:
 - For gaps, assess if trainable in 30 days
 
 ### 3. Quality Control (`check_banned_claims`)
+- Implemented in `fitcheck/banned.py` with zero dependencies — no model, no framework
 - Scan all agent output for prohibited metrics
 - Exact and fuzzy matching (handles quotes, dollar signs, etc.)
 - Hard fail if violations detected

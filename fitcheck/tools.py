@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from langchain_core.tools import tool, StructuredTool
 
 from .profile import load_profile, format_banned_claims
+from .banned import check as _check_banned
 
 
 class ExtractRoleOutput(BaseModel):
@@ -107,39 +108,18 @@ def map_evidence_fn(must_haves: list[str], context: str = "") -> str:
 
 
 def check_banned_claims_fn(text: str) -> CheckBannedClaimsOutput:
-    """Check if text contains any banned claims.
-    
-    Scans the text for exact or near-exact matches to banned metrics.
-    Returns violations list if found.
-    
-    The banned list is loaded from the active profile's `banned_claims`, never
-    hardcoded here — the whole point of the list is that it holds numbers you do not
-    want written down in a repo.
+    """Check whether text contains any of the candidate's banned claims.
+
+    The matching logic lives in `fitcheck.banned`, which has no dependencies at all —
+    the honesty gate is deterministic and testable without langchain, pydantic, a
+    model, or an API key. This function only adapts it to the tool's output schema.
+
+    The banned list comes from the active profile's `banned_claims`, never hardcoded
+    here: the point of the list is that it holds numbers you do not want in a repo.
     """
-    profile = load_profile()
-    banned = format_banned_claims(profile)
-    
-    violations = []
-    text_lower = text.lower()
-    
-    for claim in banned:
-        claim_lower = claim.lower()
-        # Check for exact or near-exact matches (handle quotes, spaces)
-        if claim_lower in text_lower:
-            violations.append(claim)
-            continue
-        
-        # Check for approximate matches without special chars
-        cleaned_claim = claim_lower.replace("$", "").replace("~", "").replace(",", "").strip()
-        cleaned_text = text_lower.replace("$", "").replace("~", "").replace(",", "").replace("approximately", "").replace("around", "")
-        
-        if cleaned_claim in cleaned_text and claim not in violations:
-            violations.append(claim)
-    
-    return CheckBannedClaimsOutput(
-        clean=len(violations) == 0,
-        violations=violations
-    )
+    banned = format_banned_claims(load_profile())
+    result = _check_banned(text, banned)
+    return CheckBannedClaimsOutput(clean=result.clean, violations=result.violations)
 
 
 def score_fit_fn(

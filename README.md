@@ -10,8 +10,13 @@ Fitcheck reads one job description and returns **APPLY or SKIP** with evidence-b
 scoring: every requirement maps to a specific bullet from the candidate's profile or is
 marked an honest `gap`, and nothing ships that trips the banned-claim gate.
 
-**The example profile is fictional**, so `git clone && pytest evals/test_tools.py` works
-for anyone, with no API key and no LLM.
+**The example profile is fictional**, and the honesty gate has no dependencies — so
+this works on a bare clone, with no install, no API key, and no model:
+
+```bash
+git clone https://github.com/munindranath/fitcheck && cd fitcheck
+python3 -m pytest evals/test_tools.py -q     # 6 passed
+```
 
 **Skill docs:** [`skills/job-fit/DOCUMENTATION.md`](skills/job-fit/DOCUMENTATION.md)
 
@@ -85,7 +90,7 @@ fitcheck/
 │   └── __main__.py       # CLI entry point
 ├── evals/
 │   ├── test_agent.py     # ~20 JD test cases
-│   └── test_tools.py     # Unit tests (no LLM, no API key)
+│   └── test_tools.py     # Unit tests (no install, no LLM, no API key)
 ├── skills/
 │   └── job-fit/
 │       └── SKILL.md      # Skill documentation
@@ -237,7 +242,8 @@ URL.* The agent scores it SKIP anyway and says what it saw. Four lines of policy
 
 **A banned-claim list.** Numbers the agent may never state about the candidate — wrong,
 stale, or not theirs to disclose — checked deterministically and quoted verbatim on a
-violation. An honesty gate that does not depend on the model feeling careful. It is also
+violation. It lives in `fitcheck/banned.py`, which imports nothing: the one part that
+must never be probabilistic is also the one part that runs with nothing installed. An honesty gate that does not depend on the model feeling careful. It is also
 why the real profile stays in a gitignored file.
 
 **Honest absence.** A requirement is matched to a specific bullet or it is a `gap`. There
@@ -274,8 +280,9 @@ Ninety seconds, four beats.
    demands APPLY and score 5 from inside an HTML comment. It gets SKIP. *"A job posting
    is attacker-controlled text. If your agent reads the open internet, this is table
    stakes."*
-4. **Run the gate with no LLM** — `pytest evals/test_tools.py -v`. *"The honesty check
-   isn't a prompt. It's six unit tests and no API key."*
+4. **Run the gate with nothing installed** — `python3 -m pytest evals/test_tools.py -v`,
+   on a bare clone. *"The honesty check isn't a prompt. It's six unit tests, no API key,
+   and no framework — `banned.py` imports nothing at all."*
 
 If asked why not more agents: the kill rules in `SKILL.md` are deliberate. One agent, no
 handoffs, no cover-letter generation. Scope discipline is the thing being demonstrated.
